@@ -48,6 +48,7 @@ class Network:
         for i in range(len(self.layers)):
             outputs = []
             for j in range(len(self.layers[i])):
+                print(inputs)
                 value = np.dot(self.layers[i][j], inputs)
                 value += self.biases[i][j]
                 value = sigmoid(value)
@@ -60,6 +61,7 @@ class Network:
         costs = []
         if type(expected) == list:
             for x in expected:
+                print(type(self.values))
                 costs.append(self.values[len(self.values) - 1] - x)
         else:
             costs.append(self.values[len(self.values) - 1][0] - expected)
@@ -117,11 +119,12 @@ def get_values():
         inputs.append(input_set)
     targets = targets.split('==========')
     for i in targets:
-        target_set = []
+        # target_set = []
         for j in i:
             if j.isdecimal():
-                target_set.append(int(j))
-        outputs.append(target_set)
+                # target_set.append(int(j)) re add this for higher level vectors?
+                outputs.append(int(j))
+        # outputs.append(target_set)
     return inputs, outputs
 
 
