@@ -6,6 +6,7 @@
 # similar to original designs but with an organized network object and methods
 # can still demonstrate the ability to dynamically create networks
 # is it better not to use objects at all?
+# add comment
 
 import numpy as np
 import matplotlib.pyplot as plt
