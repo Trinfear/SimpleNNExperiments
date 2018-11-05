@@ -55,7 +55,8 @@ class BaseLayer:
         return output
 
     def descend(self, targets):
-        x = 0   # this is a bad wait to implement it, fix this
+        # targets is a list for each node and needs to be a list
+        x = 0   # this is a bad way to implement it, fix this
         errors = []
         for i in self.nodes:
             error = i.descend(targets[x])
@@ -78,11 +79,14 @@ class Network:
         # add in new code to deal with different types of layers?
 
     def calculate(self, inputs):
+        # do inputs need to be checked?
         for i in self.layers:
             inputs = i.calculate(inputs)
         return inputs
 
     def descend(self, targets):
+        if type(targets) != list:
+            targets = [targets]
         for i in reversed(self.layers):
             targets = i.descend(targets)
 
