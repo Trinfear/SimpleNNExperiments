@@ -20,13 +20,9 @@ class Node:
     def __init__(self, weight_size):
         self.output = 0
         self.bias = numpy.random.randn()
-        self.weights = self.create_weights(weight_size)
-
-    def create_weights(self, weight_size):
-        weights = []
+        self.weights = []
         for i in range(weight_size):
-            weights.append(numpy.random.randn())
-        return weights
+            self.weights.append(numpy.random.randn())
 
     def calculate(self, inputs):
         value = numpy.dot(inputs, self.weights)
@@ -34,18 +30,17 @@ class Node:
         self.output = sigmoid(value)
         return self.output
 
-    def descend(self, target, inputs, rate):  # this seems inelegant...better strategy?
-        # move all weights and the bias such that output is closer to target
-        cost_p = 2 * (self.output - target)
-        output_p = sigmoid_p(self.output)
+    def descend(self, error, inputs, rate):  # change so target is error
+        dp_dc = error * sigmoid_p(self.output)
+        errors = []  # for every weight append the error here, and then add them all together in layer
         for i in range(len(self.weights)):
             weight_p = inputs[i]
-            dc_dw = cost_p * output_p * weight_p
+            dc_dw = dp_dc * weight_p
+            dp_dw = dp_dc * self.weights[i]
             self.weights[i] = self.weights[i] - rate * dc_dw
-        self.bias = self.bias - rate * cost_p * output_p
-
-    def targets(self):  # when each node descends have it pass on a vector of targets?
-        pass
+            errors.append(dp_dw)
+        self.bias = self.bias - rate * dp_dc
+        return errors
 
 
 class BaseLayer:
@@ -59,22 +54,21 @@ class BaseLayer:
             output.append(i.calculate(inputs))
         return output
 
-    def descend(self, targets):
-        x = 0
+    def descend(self, targets):  # in order to do the same thing in SFFNN, you need to change node descend
+        x = 0   # this is a bad wait to implement it, fix this
+        errors = []
         for i in self.nodes:
-            i.descend(targets[x])
+            error = i.descend(targets[x])
+            for j in range(len(error)):
+                if errors[j]:
+                    errors[j] += error[j]
+                else:
+                    errors[j] = 0
+                    errors[j] += error[j]
             x = x + 1
-
-    def get_targets(self):  # is there a better way to do this?
-        # iterates through every node
-        # takes the values the node wants to shift the previous targets to
-        # averages all of them out and passes them down to be used as targets for the next descend
-        x = len(self.nodes[0].weights)
-        for i in self.nodes:
-            for j in i.weights:
-                pass
-
-        pass
+        for i in range(len(errors)):
+            errors[i] = errors[i]/len(self.nodes)
+        return errors
 
 
 class Network:
@@ -89,9 +83,8 @@ class Network:
         return inputs
 
     def descend(self, targets):
-        for i in self.layers:
-            i.descend(targets)
-            # find a new target
+        for i in reversed(self.layers):
+            targets = i.descend(targets)
 
 
 def generate_network(layers, input_size):
