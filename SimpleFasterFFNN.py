@@ -99,7 +99,7 @@ def train(rounds, network, inputs, targets):    # always moves towards predictin
     return costs
 
 
-def get_values():
+def get_values(): # add a check to make sure all the data is correct?
     inputs = []
     outputs = []
     # SFFNN_Data.txt
@@ -126,6 +126,11 @@ def get_values():
                 outputs.append(int(j))
         # outputs.append(target_set)
     return inputs, outputs
+
+
+def check_data(data, targets, input_size):
+    # make sure all data is off the correct size, and prune out any faulty ones
+    pass
 
 
 def generate_network():
