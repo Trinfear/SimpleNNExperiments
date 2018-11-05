@@ -30,9 +30,9 @@ class Node:
         self.output = sigmoid(value)
         return self.output
 
-    def descend(self, error, inputs, rate):  # change so target is error
+    def descend(self, error, inputs, rate):
         dp_dc = error * sigmoid_p(self.output)
-        errors = []  # for every weight append the error here, and then add them all together in layer
+        errors = []
         for i in range(len(self.weights)):
             weight_p = inputs[i]
             dc_dw = dp_dc * weight_p
@@ -54,7 +54,7 @@ class BaseLayer:
             output.append(i.calculate(inputs))
         return output
 
-    def descend(self, targets):  # in order to do the same thing in SFFNN, you need to change node descend
+    def descend(self, targets):
         x = 0   # this is a bad wait to implement it, fix this
         errors = []
         for i in self.nodes:
@@ -118,6 +118,12 @@ def train(rounds):
 
 
 def get_data():
+    pass
+
+
+def check_data():
+    # make sure the inputs and outputs are all the correct size
+    # remove any pairs that aren't
     pass
 
 
