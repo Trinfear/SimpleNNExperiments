@@ -18,7 +18,7 @@ def sigmoid_p(x):
 class Node:
 
     def __init__(self, weight_size):
-        self.output = 0
+        self.output = None
         self.bias = numpy.random.randn()
         self.weights = []
         for i in range(weight_size):
@@ -43,11 +43,16 @@ class Node:
         return errors
 
 
-class RecurrentNode:  # should this inherit from normal node? yes, at least for practice
-    # TODO add in a a node which acts like a normal one but takes in its previous output as input
-    # previous output can be multiplied by new intake
-    # or previous output can be added to new intake before activation
-    pass
+class RecurrentNode(Node):  # Does this need any new values?
+
+    def calculate(self, inputs):
+        if self.output:
+            inputs = inputs * self.output   # could this also be addition?
+        value = numpy.dot(inputs, self.weights)
+        value += self.bias
+        self.output = sigmoid(value)
+        # self.previous = self.output
+        return self.output
 
 
 class LSTMNode:  # does this inherit from normal node or a layer?
@@ -77,12 +82,12 @@ class BaseLayer:
             output.append(i.calculate(inputs))
         return output
 
-    def descend(self, targets):
+    def descend(self, targets, rate):
         # targets is a list for each node and needs to be a list
         x = 0   # TODO this is a bad way to implement it, fix this
         errors = []
         for i in self.nodes:
-            error = i.descend(targets[x])
+            error = i.descend(targets[x], rate)
             for j in range(len(error)):
                 if errors[j]:
                     errors[j] += error[j]
@@ -98,6 +103,8 @@ class BaseLayer:
 class ConLayer:  # should this inherit from base layer?
     # TODO add in functionality for a con layer?
     # works like regular layer by only connects to some of the previous layer
+    # is difference here or in generation?
+
     pass
 
 
@@ -113,11 +120,12 @@ class Network:
             inputs = i.calculate(inputs)
         return inputs
 
-    def descend(self, targets):
+    def descend(self, targets, rate):
+        # TODO add in inputs, either pass previous layer or input set
         if type(targets) != list:
             targets = [targets]
         for i in reversed(self.layers):
-            targets = i.descend(targets)
+            targets = i.descend(targets, rate)
 
 
 def generate_network(layers, input_size):
@@ -144,9 +152,12 @@ def get_parameters():
     return layers, input_size
 
 
-def train(rounds):
+def train(rounds, input_set, outputs, rate):
     for i in range(rounds):
-        pass
+        x = numpy.random.randint(0, len(input_set))
+        inputs = input_set[x]
+        targets = outputs[x]
+
     pass
 
 
@@ -158,5 +169,4 @@ def get_data():
 
 def write_data_pass():
     pass
-# TODO create a memory node type to inherent from node class
 # TODO test to make sure the current functions work properly
