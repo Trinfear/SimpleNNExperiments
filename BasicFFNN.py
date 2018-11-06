@@ -43,6 +43,29 @@ class Node:
         return errors
 
 
+class RecurrentNode:  # should this inherit from normal node? yes, at least for practice
+    # TODO add in a a node which acts like a normal one but takes in its previous output as input
+    # previous output can be multiplied by new intake
+    # or previous output can be added to new intake before activation
+    pass
+
+
+class LSTMNode:  # does this inherit from normal node or a layer?
+    # TODO add in functionality for LSTM Nodes
+    # node intakes a value (or values?)
+    # value(s?) is multiplied by a remember gate
+    # current value(s?) is multiplied by a forget gate
+    # the above two are added together
+    # the network keeps the above as its new remember set, and passes on an activated set of values
+
+    # use new information to prime forget gate
+    # multiply forget gate by previous cell state
+    # use new information to prime remember gate
+    # add remember gate to cell state
+    #
+    pass
+
+
 class BaseLayer:
 
     def __init__(self, nodes):
@@ -56,7 +79,7 @@ class BaseLayer:
 
     def descend(self, targets):
         # targets is a list for each node and needs to be a list
-        x = 0   # this is a bad way to implement it, fix this
+        x = 0   # TODO this is a bad way to implement it, fix this
         errors = []
         for i in self.nodes:
             error = i.descend(targets[x])
@@ -70,6 +93,12 @@ class BaseLayer:
         for i in range(len(errors)):
             errors[i] = errors[i]/len(self.nodes)
         return errors
+
+
+class ConLayer:  # should this inherit from base layer?
+    # TODO add in functionality for a con layer?
+    # works like regular layer by only connects to some of the previous layer
+    pass
 
 
 class Network:
@@ -122,6 +151,8 @@ def train(rounds):
 
 
 def get_data():
+    # TODO read and intake a text file and convert it to readable data
+    # TODO intake a separate text file for targets
     pass
 
 
@@ -133,4 +164,5 @@ def check_data():
 
 def write_data_pass():
     pass
-# create a memory node type to inherent from node class
+# TODO create a memory node type to inherent from node class
+# TODO test to make sure the current functions work properly
