@@ -45,7 +45,7 @@ class Network:
 
     def calculate(self, inputs):
         self.values = [] # clear out previous value set
-        # would appending inputs here hekp?
+        # would appending inputs here help?
         for i in range(len(self.layers)):   # iterates through layers
             outputs = []
             for j in range(len(self.layers[i])):    # iterates through nodes
@@ -58,7 +58,7 @@ class Network:
         return inputs
 
     def descend(self, expected, inputs):  # change so inputs are appended to values?
-        costs = []
+        costs = []  # TODO make sure this can deal with vector targets
         if type(expected) == list:
             for x in expected:
                 print(type(self.values))
@@ -141,7 +141,9 @@ def generate_network():
     return network
 
 
-input_set, output_set = get_values()
+# input_set, output_set = get_values()
+input_set = [[0, 1, 1], [0, 0, 0], [1, 1, 1], [1, 1, 0]]
+output_set = [0, 0, 1, 0]
 NN = generate_network()
 cost_totals = train(100000, NN, input_set, output_set)
 print(NN.calculate([0, 1, 1]))
