@@ -1,12 +1,11 @@
 #!python3
-# write a simplified neural network with just a network object
-# should run faster than the other network set, but will only be able to do simple feed forward
-# use only network object with a list of layers, which each contain a list of nodes which each have weights list
-# separate 2d array of biases to each be added to the nodes on activation
-# similar to original designs but with an organized network object and methods
-# can still demonstrate the ability to dynamically create networks
-# is it better not to use objects at all?
-# add comment
+"""
+This is a simple Feed forward Neural network
+It cannot be used for as wide a range as the other object based models, but should run much faster
+Rather than generating interchangeable objects for nodes and layers, this uses a single object "Network"
+This keeps all weights in a single 3d array and all biases in a 2d array
+Also contains functions to read in values from a text file and generate and train a network object
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,7 +21,7 @@ def sigmoid_p(x):
 
 class Network:
 
-    def __init__(self, layer_set, input_size):  # add input layer has first layer??
+    def __init__(self, layer_set, input_size):  # add input layer aas first layer??
         # create layers
         layers = []     # 3d matrix of weights
         biases = []     # 2d array of biases
@@ -45,10 +44,11 @@ class Network:
         self.values = []            # 2d array of outputs
 
     def calculate(self, inputs):
-        for i in range(len(self.layers)):
+        self.values = [] # clear out previous value set
+        # would appending inputs here help?
+        for i in range(len(self.layers)):   # iterates through layers
             outputs = []
-            for j in range(len(self.layers[i])):
-                print(inputs)
+            for j in range(len(self.layers[i])):    # iterates through nodes
                 value = np.dot(self.layers[i][j], inputs)
                 value += self.biases[i][j]
                 value = sigmoid(value)
@@ -57,8 +57,8 @@ class Network:
             self.values.append(inputs)
         return inputs
 
-    def descend(self, expected, inputs):  # will this work? come back and look at it
-        costs = []
+    def descend(self, expected, inputs):  # change so inputs are appended to values?
+        costs = []  # TODO make sure this can deal with vector targets
         if type(expected) == list:
             for x in expected:
                 print(type(self.values))
@@ -82,7 +82,8 @@ class Network:
                 self.biases[i][j] = self.biases[i][j] - 0.1 * dc_dz
             costs = new_costs  # set costs to costs for next layer
             for n in range(len(costs)):  # normalize costs
-                costs[n] = costs[n]/len(layer)
+                x = costs[n]/len(layer)  # TODO fix this
+                costs[n] = float(x)
 
 
 def train(rounds, network, inputs, targets):    # always moves towards predicting 0
@@ -112,11 +113,11 @@ def get_values(): # add a check to make sure all the data is correct?
     text_data.close()
     data = data.split("==========")  # separate data and targets using 10 * =
     for i in data:  # split into each set of data
-        input_set = []
+        inputs_set = []
         for j in i:
             if j.isdecimal():
-                input_set.append(int(j))
-        inputs.append(input_set)
+                inputs_set.append(int(j))
+        inputs.append(inputs_set)
     targets = targets.split('==========')
     for i in targets:
         # target_set = []
@@ -145,7 +146,9 @@ def generate_network():
     return network
 
 
-input_set, output_set = get_values()
+# input_set, output_set = get_values()
+input_set = [[0, 1, 1], [0, 0, 0], [1, 1, 1], [1, 1, 0]]
+output_set = [0, 0, 1, 0]
 NN = generate_network()
 cost_totals = train(100000, NN, input_set, output_set)
 print(NN.calculate([0, 1, 1]))
