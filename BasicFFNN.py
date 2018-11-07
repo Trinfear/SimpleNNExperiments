@@ -2,7 +2,7 @@
 # create new nn generation environment
 # keep decentralized class organization to better add new node or layer types
 
-import numpy
+import numpy # TODO fix everything so this is imported and used as np
 import matplotlib.pyplot as plt
 import re
 
