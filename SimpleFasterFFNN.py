@@ -21,7 +21,7 @@ def sigmoid_p(x):
 
 class Network:
 
-    def __init__(self, layer_set, input_size):  # add input layer aas first layer??
+    def __init__(self, layer_set, input_size):
         # create layers
         layers = []     # 3d matrix of weights
         biases = []     # 2d array of biases
@@ -58,13 +58,12 @@ class Network:
             self.values.append(inputs)
         return inputs
 
-    def descend(self, expected, inputs):  # change so inputs are appended to values?
+    def descend(self, expected):  # change so inputs are appended to values?
         costs = []
         # TODO make sure this can deal with vector targets
-        expected = [expected]
+        expected = [expected]  # this should get fixed before it gets passed here
         for x in expected:
             costs.append(self.values[len(self.values) - 1][0] - x)  # fix this so its not just [0]
-
         for i in reversed(range(1, len(self.values))):  # breaks down to 2d array of weights
             layer = self.layers[i-1]
             new_costs = []  # calculate costs for next layer
@@ -87,7 +86,7 @@ def train(rounds, network, inputs, targets):    # always moves towards predictin
     for i in range(rounds):
         x = np.random.randint(0, len(inputs))
         output = network.calculate(inputs[x])
-        network.descend(targets[x], inputs[x])
+        network.descend(targets[x])
         output = np.array([output])
         cost = (output - targets[x])**2
         cost = np.array(cost)
