@@ -44,7 +44,8 @@ class Network:
         self.values = []            # 2d array of outputs
 
     def calculate(self, inputs):
-        self.values = [] # clear out previous value set
+        self.values = []  # clear out previous value set
+        self.values.append(inputs)
         # would appending inputs here help?
         for i in range(len(self.layers)):   # iterates through layers
             outputs = []
@@ -58,32 +59,27 @@ class Network:
         return inputs
 
     def descend(self, expected, inputs):  # change so inputs are appended to values?
-        costs = []  # TODO make sure this can deal with vector targets
-        if type(expected) == list:
-            for x in expected:
-                print(type(self.values))
-                costs.append(self.values[len(self.values) - 1] - x)
-        else:
-            costs.append(self.values[len(self.values) - 1][0] - expected)
-        for i in reversed(range(len(self.layers))):  # breaks down to 2d array of weights
-            layer = self.layers[i]
+        costs = []
+        # TODO make sure this can deal with vector targets
+        expected = [expected]
+        for x in expected:
+            costs.append(self.values[len(self.values) - 1][0] - x)  # fix this so its not just [0]
+
+        for i in reversed(range(1, len(self.values))):  # breaks down to 2d array of weights
+            layer = self.layers[i-1]
             new_costs = []  # calculate costs for next layer
             for t in range(len(layer[0])):
-                new_costs.append(0)
+                new_costs.append(0.0)  # initialize new costs
             for j in range(len(layer)):  # fetches 1d array of weights
                 dc_dz = costs[0] * sigmoid_p(self.values[i][j])
                 for k in range(len(layer[j])):      # iterates through each weight
-                    new_costs[k] += dc_dz * self.layers[i][j][k]  # find costs for previous nodes from current
-                    if i > 0:
-                        dc_dw = dc_dz * self.values[i-1][k]  # value of node weight is connected to
-                    else:
-                        dc_dw = dc_dz * inputs[k]
+                    new_costs[k] += dc_dz * layer[j][k]  # find costs for previous nodes from current
+                    dc_dw = dc_dz * self.values[i-1][k]  # value of node weight is connected to
                     layer[j][k] = layer[j][k] - 0.1 * dc_dw
-                self.biases[i][j] = self.biases[i][j] - 0.1 * dc_dz
+                self.biases[i-1][j] = self.biases[i-1][j] - 0.1 * dc_dz
             costs = new_costs  # set costs to costs for next layer
             for n in range(len(costs)):  # normalize costs
-                x = costs[n]/len(layer)  # TODO fix this
-                costs[n] = float(x)
+                costs[n] = costs[n]/len(layer)
 
 
 def train(rounds, network, inputs, targets):    # always moves towards predicting 0
@@ -146,6 +142,6 @@ input_set = [[0, 1, 1], [0, 0, 0], [1, 1, 1], [1, 1, 0]]
 output_set = [0, 0, 1, 0]
 NN = generate_network()
 cost_totals = train(100000, NN, input_set, output_set)
-print(NN.calculate([0, 1, 1]))
+print(NN.calculate([1, 0, 1]))
 plt.plot(cost_totals)
 plt.show()
