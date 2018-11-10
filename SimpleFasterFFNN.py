@@ -9,6 +9,7 @@ Also contains functions to read in values from a text file and generate and trai
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def sigmoid(x):
@@ -43,7 +44,10 @@ class Network:
         self.biases = biases        # 2d array of biases
         self.values = []            # 2d array of outputs
 
-    def calculate(self, inputs):
+    def calculate(self, inputs):    # TODO last round returns unaligned?
+        # print(type(inputs))
+        # numpy arrays should work
+        # currently works only for 1 layer networks?
         self.values = []  # clear out previous value set
         self.values.append(inputs)
         # would appending inputs here help?
@@ -83,7 +87,7 @@ class Network:
 
 def train(rounds, network, inputs, targets):    # always moves towards predicting 0
     costs = []
-    for i in range(rounds):
+    for i in range(rounds):     # TODO last round returns value error unaligned
         x = np.random.randint(0, len(inputs))
         output = network.calculate(inputs[x])
         network.descend(targets[x])
@@ -92,10 +96,11 @@ def train(rounds, network, inputs, targets):    # always moves towards predictin
         cost = np.array(cost)
         cost = np.sum(cost)
         costs.append(cost)
+        print(i)
     return costs
 
 
-def get_values():
+def get_values_pd_free():  # this is having issues returning proper targets
     inputs = []
     outputs = []
     # SFFNN_Data.txt
@@ -124,6 +129,20 @@ def get_values():
     return inputs, outputs
 
 
+def get_values():
+    inputs = pd.read_csv('SFFNN_Data.txt', index_col=0)
+    outputs = pd.read_csv('SFFNN_targets.txt', index_col=0)
+    for i in inputs:
+        if len(i) != 64:  # TODO generalize this
+            inputs.drop([int(i)], inplace=True)
+            outputs.drop([int(i)], inplace=True)
+    inputs = np.array(inputs)
+    outputs = np.array(outputs)
+    print(len(inputs))
+    print(len(inputs[1]))
+    return inputs, outputs
+
+
 def generate_network():
     # get inputs for network size and stuff
     layers = int(input("How many layers for the NN? "))
@@ -136,9 +155,10 @@ def generate_network():
     return network
 
 
-# input_set, output_set = get_values()
-input_set = [[0, 1, 1], [0, 0, 0], [1, 1, 1], [1, 1, 0]]
-output_set = [0, 0, 1, 0]
+input_set, output_set = get_values()
+
+# input_set = [[0, 1, 1], [0, 0, 0], [1, 1, 1], [1, 1, 0]]
+# output_set = [0, 0, 1, 0]
 NN = generate_network()
 cost_totals = train(100000, NN, input_set, output_set)
 print(NN.calculate([1, 0, 1]))
