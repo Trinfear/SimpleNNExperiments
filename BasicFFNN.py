@@ -167,6 +167,12 @@ def get_data():
     pass
 
 
+def check_data():
+    # make sure the inputs and outputs are all the correct size
+    # remove any pairs that aren't
+    pass
+
+
 def write_data_pass():
     pass
 # TODO test to make sure the current functions work properly

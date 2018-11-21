@@ -128,7 +128,7 @@ def get_values_pd_free():  # this is having issues returning proper targets
         # outputs.append(target_set)
     return inputs, outputs
 
-
+  
 def get_values():
     inputs = pd.read_csv('SFFNN_Data.txt', index_col=0)
     outputs = pd.read_csv('SFFNN_targets.txt', index_col=0)
@@ -141,6 +141,11 @@ def get_values():
     print(len(inputs))
     print(len(inputs[1]))
     return inputs, outputs
+  
+  
+def check_data(data, targets, input_size):
+    # make sure all data is off the correct size, and prune out any faulty ones
+    pass
 
 
 def generate_network():
