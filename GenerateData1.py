@@ -1,6 +1,7 @@
 # create a txt file and fill it with data following some simple rules
 # add in a function in basicNNobjects to intake and read the txt file
 import numpy
+import pandas as pd
 
 
 def get_parameters():
@@ -24,7 +25,7 @@ def generate_data(input_size, data_size):
     return inputs, targets
 
 
-def generate_txt(inputs, outputs):  # occasionally the input vector is empty?
+def generate_txt_pd_free(inputs, outputs):  # occasionally the input vector is empty?
     new_text = open("SFFNN_Data.txt", "w")
     new_target = open("SFFNN_Targets.txt", "w")
     for i in inputs:
@@ -35,6 +36,13 @@ def generate_txt(inputs, outputs):  # occasionally the input vector is empty?
         new_target.write("==========")
     new_text.close()
     new_target.close()
+
+
+def generate_txt(inputs, outputs):
+    inputs = pd.DataFrame(inputs)
+    outputs = pd.DataFrame(outputs)
+    inputs.to_csv('SFFNN_Data.txt')
+    outputs.to_csv("SFFNN_Targets.txt")
 
 
 # write some target rules:
